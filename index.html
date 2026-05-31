@@ -1,0 +1,1387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Elite Commercial OS · V2</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet"/>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#08080d;--s1:#0f0f16;--s2:#16161f;--s3:#1e1e2a;--s4:#252534;
+  --b1:#252535;--b2:#343448;--b3:#454560;
+  --acc:#d4ff3f;--acc2:#3fd4ff;--acc3:#ff5533;--acc4:#aa66ff;
+  --txt:#eeeef8;--txt2:#8888aa;--txt3:#4a4a66;
+  --grn:#1fff8a;--red:#ff3d5a;--amb:#ffaa33;--pur:#aa66ff;
+  --fn:'Space Grotesk',sans-serif;--mo:'JetBrains Mono',monospace;
+  --r:10px;--r2:7px;
+}
+html,body{background:var(--bg);color:var(--txt);font-family:var(--fn);height:100%;overflow:hidden}
+#app{display:flex;flex-direction:column;height:100vh}
+
+/* NAV */
+#nav{display:flex;align-items:center;gap:12px;padding:10px 18px;border-bottom:1px solid var(--b1);background:var(--s1);flex-shrink:0;flex-wrap:wrap}
+.nav-logo{font-weight:700;font-size:14px;color:var(--acc);white-space:nowrap;letter-spacing:-0.3px}
+.nav-logo span{color:var(--txt3);font-weight:400}
+.nav-tabs{display:flex;gap:3px;flex:1;flex-wrap:wrap}
+.ntab{padding:5px 11px;border-radius:6px;font-size:11px;font-weight:500;cursor:pointer;border:1px solid transparent;color:var(--txt2);transition:.12s;white-space:nowrap}
+.ntab:hover{background:var(--s2);color:var(--txt)}
+.ntab.active{background:var(--acc);color:#000;font-weight:700}
+.nav-r{display:flex;align-items:center;gap:10px;flex-shrink:0}
+.xp-wrap{display:flex;align-items:center;gap:7px}
+.xp-lbl{font-size:10px;color:var(--txt3);font-family:var(--mo)}
+.xp-bar{width:70px;height:3px;background:var(--s3);border-radius:3px;overflow:hidden}
+.xp-f{height:100%;background:linear-gradient(90deg,var(--acc),var(--acc2));transition:width .5s}
+.lv-badge{padding:2px 9px;border-radius:20px;font-size:10px;font-weight:700;background:var(--s2);border:1px solid var(--b2);color:var(--acc);font-family:var(--mo)}
+.weak-dot{width:7px;height:7px;border-radius:50%;background:var(--red);cursor:pointer;position:relative}
+.weak-dot[data-count="0"]{background:var(--b2)}
+.weak-tooltip{position:absolute;top:16px;right:0;background:var(--s1);border:1px solid var(--b2);border-radius:var(--r);padding:10px 12px;min-width:200px;z-index:50;font-size:11px;line-height:1.8;display:none;color:var(--txt2)}
+.weak-dot:hover .weak-tooltip{display:block}
+
+/* SCREENS */
+#main{flex:1;overflow:hidden;display:flex;flex-direction:column}
+.scr{display:none;flex:1;overflow:hidden;flex-direction:column}
+.scr.active{display:flex}
+
+/* HOME */
+#home-scr{overflow-y:auto}
+#home{padding:20px}
+.hero{text-align:center;padding:20px 0 16px}
+.hero h1{font-size:26px;font-weight:700;letter-spacing:-1px;line-height:1.1}
+.hero h1 em{color:var(--acc);font-style:normal}
+.hero p{color:var(--txt2);font-size:13px;margin-top:6px}
+.diff-bar{display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--s2);border:1px solid var(--b1);border-radius:var(--r);margin-bottom:16px}
+.diff-label{font-size:11px;color:var(--txt2);font-family:var(--mo);white-space:nowrap}
+.diff-pills{display:flex;gap:6px}
+.diff-pill{padding:4px 12px;border-radius:20px;font-size:11px;font-weight:600;cursor:pointer;border:1px solid var(--b2);color:var(--txt2);transition:.12s}
+.diff-pill.active{background:var(--acc);color:#000;border-color:var(--acc)}
+.modes-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:10px}
+.mcard{background:var(--s1);border:1px solid var(--b1);border-radius:var(--r);padding:14px;cursor:pointer;transition:.18s;position:relative;overflow:hidden}
+.mcard::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--ac,var(--acc));opacity:0;transition:.18s}
+.mcard:hover{border-color:var(--b2);background:var(--s2);transform:translateY(-1px)}
+.mcard:hover::after{opacity:1}
+.mcard-icon{font-size:20px;margin-bottom:8px}
+.mcard-title{font-size:13px;font-weight:600;margin-bottom:3px}
+.mcard-desc{font-size:11px;color:var(--txt2);line-height:1.4}
+.mcard-tag{display:inline-block;padding:2px 7px;border-radius:20px;font-size:9px;font-weight:700;margin-top:7px;font-family:var(--mo);letter-spacing:.5px}
+.sec-title{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--txt3);margin-bottom:12px;font-family:var(--mo)}
+
+/* TRAINING */
+.trn-wrap{display:flex;flex-direction:column;height:100%}
+.trn-head{display:flex;align-items:center;gap:10px;padding:10px 18px;border-bottom:1px solid var(--b1);flex-shrink:0}
+.back-btn{padding:5px 10px;border:1px solid var(--b1);border-radius:6px;font-size:11px;cursor:pointer;color:var(--txt2);background:transparent;font-family:var(--fn)}
+.back-btn:hover{background:var(--s2);color:var(--txt)}
+.trn-title{font-size:13px;font-weight:600;flex:1}
+.streak-pill{padding:3px 10px;background:rgba(212,255,63,0.1);border:1px solid var(--acc);border-radius:20px;font-size:10px;font-weight:700;color:var(--acc);font-family:var(--mo);display:none;align-items:center;gap:4px}
+.score-disp{font-family:var(--mo);font-size:12px;color:var(--acc)}
+.prog-bar{height:2px;background:var(--s3);flex-shrink:0}
+.prog-f{height:100%;background:var(--acc);transition:width .4s}
+.case-area{flex:1;overflow-y:auto;padding:18px}
+
+/* CASE CARDS */
+.case-card{background:var(--s1);border:1px solid var(--b1);border-radius:var(--r);padding:18px;margin-bottom:14px}
+.case-lbl{font-size:9px;font-weight:700;letter-spacing:1.5px;color:var(--txt3);text-transform:uppercase;margin-bottom:6px;font-family:var(--mo)}
+.case-scenario{font-size:13px;color:var(--txt2);line-height:1.65}
+.signal-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:6px;margin-top:12px}
+.sig-item{padding:6px 10px;background:var(--s2);border:1px solid var(--b1);border-radius:6px;font-size:11px;color:var(--txt2)}
+.sig-item strong{color:var(--txt);display:block;font-size:10px;margin-bottom:2px;font-family:var(--mo)}
+.conflict-badge{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;background:rgba(255,85,51,0.1);border:1px solid rgba(255,85,51,0.3);border-radius:20px;font-size:9px;font-weight:700;color:var(--acc3);margin-bottom:10px;font-family:var(--mo)}
+
+.q-card{background:var(--s2);border:1px solid var(--b2);border-radius:var(--r);padding:14px;margin-bottom:10px}
+.q-text{font-size:14px;font-weight:500;line-height:1.4;margin-bottom:12px}
+.opts{display:flex;flex-direction:column;gap:7px}
+.opt-btn{padding:11px 14px;border:1px solid var(--b1);border-radius:var(--r2);font-size:12px;cursor:pointer;text-align:left;background:var(--s1);color:var(--txt);transition:.12s;line-height:1.5;font-family:var(--fn);position:relative}
+.opt-btn:hover:not(:disabled){border-color:var(--b3);background:var(--s2)}
+.opt-btn.correct{border-color:var(--grn);background:rgba(31,255,138,0.07);color:var(--grn)}
+.opt-btn.wrong{border-color:var(--red);background:rgba(255,61,90,0.07);color:var(--red)}
+.opt-btn.viable{border-color:var(--amb);background:rgba(255,170,51,0.07)}
+.opt-btn:disabled{cursor:default}
+.opt-letter{display:inline-block;width:18px;height:18px;border-radius:4px;background:var(--s3);font-size:10px;font-weight:700;text-align:center;line-height:18px;margin-right:8px;flex-shrink:0;font-family:var(--mo)}
+
+/* CONFIDENCE SLIDER */
+.conf-area{background:var(--s3);border:1px solid var(--b2);border-radius:var(--r2);padding:12px 14px;margin-top:10px}
+.conf-label{font-size:11px;color:var(--txt2);margin-bottom:8px}
+.conf-row{display:flex;align-items:center;gap:10px}
+.conf-slider{flex:1;-webkit-appearance:none;height:4px;border-radius:4px;background:var(--b2);outline:none}
+.conf-slider::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:var(--acc);cursor:pointer}
+.conf-val{font-family:var(--mo);font-size:13px;font-weight:700;color:var(--acc);width:36px;text-align:right}
+.conf-submit{padding:7px 16px;background:var(--acc);border:none;border-radius:6px;font-size:12px;font-weight:700;color:#000;cursor:pointer;font-family:var(--fn);margin-top:10px}
+
+.fb-box{margin-top:10px;padding:14px;border-radius:var(--r2);border-left:3px solid var(--acc2);background:rgba(63,212,255,0.05);font-size:12px;line-height:1.7}
+.fb-box.good{border-color:var(--grn);background:rgba(31,255,138,0.05)}
+.fb-box.bad{border-color:var(--red);background:rgba(255,61,90,0.05)}
+.fb-box.partial{border-color:var(--amb);background:rgba(255,170,51,0.05)}
+.fb-verdict{font-weight:700;margin-bottom:6px;font-size:13px}
+.conf-score{display:inline-block;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;margin-left:8px;font-family:var(--mo)}
+.next-btn{padding:8px 20px;background:var(--acc);color:#000;border:none;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer;margin-top:10px;font-family:var(--fn)}
+.next-btn:hover{opacity:.88}
+.why-deeper{padding:8px 14px;background:transparent;border:1px solid var(--b2);border-radius:6px;font-size:11px;color:var(--txt2);cursor:pointer;font-family:var(--fn);margin-top:8px;margin-left:8px}
+.why-deeper:hover{border-color:var(--b3);color:var(--txt)}
+
+/* GLOSSARY */
+.gloss-term{color:var(--acc2);cursor:pointer;border-bottom:1px dashed var(--acc2);font-size:inherit}
+.gloss-popup{position:fixed;z-index:200;background:var(--s1);border:1px solid var(--b3);border-radius:var(--r);padding:14px;max-width:280px;font-size:12px;line-height:1.6;box-shadow:0 8px 32px rgba(0,0,0,.6);display:none}
+.gloss-popup strong{color:var(--acc2);display:block;margin-bottom:4px;font-size:13px}
+.gloss-close{float:right;cursor:pointer;color:var(--txt3);font-size:14px;line-height:1}
+
+/* AI COACH */
+.chat-wrap{display:flex;flex-direction:column;height:100%}
+.chat-head{padding:10px 18px;border-bottom:1px solid var(--b1);flex-shrink:0;display:flex;align-items:center;gap:10px}
+.coach-av{width:30px;height:30px;border-radius:50%;background:var(--acc);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#000}
+.coach-nm{font-weight:600;font-size:13px}
+.coach-st{font-size:10px;color:var(--grn)}
+.api-bar{padding:7px 18px;background:var(--s2);border-bottom:1px solid var(--b1);display:flex;align-items:center;gap:8px;flex-shrink:0}
+.api-bar label{font-size:11px;color:var(--txt2);white-space:nowrap}
+.api-inp{flex:1;background:var(--s1);border:1px solid var(--b1);border-radius:6px;padding:5px 9px;font-size:11px;color:var(--txt);font-family:var(--mo);outline:none}
+.api-save{padding:5px 12px;background:var(--s3);border:1px solid var(--b2);border-radius:6px;font-size:11px;color:var(--txt);cursor:pointer;font-family:var(--fn)}
+.api-save:hover{background:var(--acc);color:#000;border-color:var(--acc)}
+.api-st{font-size:10px;color:var(--txt3)}
+.chat-msgs{flex:1;overflow-y:auto;padding:14px 18px;display:flex;flex-direction:column;gap:10px}
+.msg{max-width:88%;font-size:12px;line-height:1.65}
+.msg.coach{background:var(--s2);border:1px solid var(--b1);border-radius:0 var(--r) var(--r) var(--r);padding:11px 13px;align-self:flex-start}
+.msg.user{background:var(--s3);border:1px solid var(--b2);border-radius:var(--r) 0 var(--r) var(--r);padding:11px 13px;align-self:flex-end}
+.msg-time{font-size:9px;color:var(--txt3);margin-top:3px;font-family:var(--mo)}
+.chat-inp-area{padding:10px 18px;border-top:1px solid var(--b1);flex-shrink:0;display:flex;gap:7px}
+.chat-inp{flex:1;background:var(--s2);border:1px solid var(--b1);border-radius:var(--r2);padding:9px 12px;font-size:12px;color:var(--txt);font-family:var(--fn);outline:none}
+.chat-inp:focus{border-color:var(--b2)}
+.chat-send{padding:9px 16px;background:var(--acc);border:none;border-radius:var(--r2);font-size:12px;font-weight:700;color:#000;cursor:pointer;font-family:var(--fn)}
+.thinking{display:flex;gap:4px;align-items:center;padding:11px 13px}
+.thinking span{width:5px;height:5px;border-radius:50%;background:var(--txt3);animation:blink 1.2s infinite}
+.thinking span:nth-child(2){animation-delay:.2s}
+.thinking span:nth-child(3){animation-delay:.4s}
+.coach-chips{display:flex;gap:6px;flex-wrap:wrap;padding:8px 18px;border-bottom:1px solid var(--b1);flex-shrink:0}
+.chip{padding:5px 11px;border:1px solid var(--b2);border-radius:20px;font-size:10px;cursor:pointer;color:var(--txt2);transition:.12s}
+.chip:hover{border-color:var(--acc);color:var(--acc)}
+@keyframes blink{0%,80%,100%{opacity:.2}40%{opacity:1}}
+
+/* STATS */
+#stats-scr{overflow-y:auto}
+#stats{padding:18px}
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px;margin-bottom:18px}
+.stat-card{background:var(--s1);border:1px solid var(--b1);border-radius:var(--r);padding:12px;text-align:center}
+.stat-num{font-size:26px;font-weight:700;font-family:var(--mo);color:var(--acc)}
+.stat-lbl{font-size:10px;color:var(--txt2);margin-top:3px}
+.weak-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:18px}
+.weak-card{background:var(--s1);border:1px solid var(--b1);border-radius:var(--r);padding:12px}
+.weak-title{font-size:10px;font-weight:700;color:var(--txt3);font-family:var(--mo);margin-bottom:6px;text-transform:uppercase}
+.weak-bar-wrap{display:flex;align-items:center;gap:8px;margin-bottom:4px}
+.weak-bar-bg{flex:1;height:4px;background:var(--s3);border-radius:4px;overflow:hidden}
+.weak-bar-fill{height:100%;border-radius:4px}
+.weak-pct{font-size:10px;font-family:var(--mo);color:var(--txt3);width:30px;text-align:right}
+.brain-row{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.brain-nm{font-size:11px;color:var(--txt2);width:130px;flex-shrink:0}
+.brain-bg{flex:1;height:5px;background:var(--s2);border-radius:4px;overflow:hidden}
+.brain-fill{height:100%;border-radius:4px;transition:width .6s}
+.brain-pct{font-size:10px;font-family:var(--mo);color:var(--txt3);width:30px;text-align:right}
+
+/* LOADER */
+.loader{position:fixed;inset:0;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:999;transition:opacity .4s}
+.loader.gone{opacity:0;pointer-events:none}
+.ld-title{font-size:20px;font-weight:700;color:var(--acc);letter-spacing:-0.5px}
+.ld-sub{font-size:12px;color:var(--txt2);margin-top:6px}
+.ld-dots{display:flex;gap:7px;margin-top:18px}
+.ld-dot{width:7px;height:7px;border-radius:50%;background:var(--acc);animation:blink .9s infinite}
+.ld-dot:nth-child(2){animation-delay:.15s}
+.ld-dot:nth-child(3){animation-delay:.3s}
+
+/* SUMMARY */
+.sum-card{background:var(--s1);border:1px solid var(--b1);border-radius:var(--r);padding:28px 20px;text-align:center;max-width:500px;margin:0 auto}
+.sum-pct{font-size:56px;font-weight:700;font-family:var(--mo);margin:10px 0}
+.sum-grade{font-size:16px;font-weight:600;margin-bottom:6px}
+.sum-sub{color:var(--txt2);font-size:12px;margin-bottom:20px}
+.sum-btns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+</style>
+</head>
+<body>
+
+<div class="loader" id="loader">
+  <div class="ld-title">ELITE COMMERCIAL OS · V2</div>
+  <div class="ld-sub">Loading war simulation...</div>
+  <div class="ld-dots"><div class="ld-dot"></div><div class="ld-dot"></div><div class="ld-dot"></div></div>
+</div>
+
+<div class="gloss-popup" id="gloss-popup">
+  <span class="gloss-close" onclick="closeGloss()">✕</span>
+  <strong id="gloss-term"></strong>
+  <div id="gloss-def"></div>
+</div>
+
+<div id="app">
+  <div id="nav">
+    <div class="nav-logo">ECO<span>·V2</span></div>
+    <div class="nav-tabs">
+      <div class="ntab active" data-s="home">Mission Control</div>
+      <div class="ntab" data-s="training">War Room</div>
+      <div class="ntab" data-s="coach">AI Coach</div>
+      <div class="ntab" data-s="stats">Intel</div>
+    </div>
+    <div class="nav-r">
+      <div class="xp-wrap">
+        <div class="xp-lbl" id="xp-txt">0 XP</div>
+        <div class="xp-bar"><div class="xp-f" id="xp-f" style="width:0%"></div></div>
+      </div>
+      <div class="lv-badge" id="lv-badge">ROOKIE</div>
+      <div class="weak-dot" id="weak-dot" data-count="0" title="Weakness tracker">
+        <div class="weak-tooltip" id="weak-tt">No weaknesses tracked yet. Start training.</div>
+      </div>
+    </div>
+  </div>
+
+  <div id="main">
+
+    <!-- HOME -->
+    <div class="scr active" id="home-scr">
+      <div id="home">
+        <div class="hero">
+          <h1>Commercial<br/><em>War Simulator</em></h1>
+          <p>No easy answers. No cartoon distractors. Real ambiguity. Genuine hesitation.</p>
+        </div>
+        <div class="diff-bar">
+          <div class="diff-label">DIFFICULTY:</div>
+          <div class="diff-pills">
+            <div class="diff-pill active" data-d="1">Advisor</div>
+            <div class="diff-pill" data-d="2">Consultant</div>
+            <div class="diff-pill" data-d="3">Operator</div>
+            <div class="diff-pill" data-d="4">Elite</div>
+          </div>
+          <div style="font-size:10px;color:var(--txt3);margin-left:auto" id="diff-desc">Good distractors, some obvious signals</div>
+        </div>
+        <div class="sec-title">Training Modes</div>
+        <div class="modes-grid">
+          <div class="mcard" data-m="rapid" style="--ac:#d4ff3f">
+            <div class="mcard-icon">⚡</div>
+            <div class="mcard-title">Rapid Diagnosis</div>
+            <div class="mcard-desc">Conflicting signals. Every option feels viable. Force prioritization.</div>
+            <div class="mcard-tag" style="background:rgba(212,255,63,.1);color:#d4ff3f;border:1px solid rgba(212,255,63,.25)">AMBIGUOUS</div>
+          </div>
+          <div class="mcard" data-m="detective" style="--ac:#3fd4ff">
+            <div class="mcard-icon">🔍</div>
+            <div class="mcard-title">Root Cause Detective</div>
+            <div class="mcard-desc">Real human objection language. Multiple valid questions. Best move wins.</div>
+            <div class="mcard-tag" style="background:rgba(63,212,255,.1);color:#3fd4ff;border:1px solid rgba(63,212,255,.25)">DIAGNOSTIC</div>
+          </div>
+          <div class="mcard" data-m="structure" style="--ac:#aa66ff">
+            <div class="mcard-icon">🏗️</div>
+            <div class="mcard-title">Structuring Lab</div>
+            <div class="mcard-desc">Deal killer traps. High mileage ≠ TRAC. Ownership ≠ wrong. Think.</div>
+            <div class="mcard-tag" style="background:rgba(170,102,255,.1);color:#aa66ff;border:1px solid rgba(170,102,255,.25)">TRAP HEAVY</div>
+          </div>
+          <div class="mcard" data-m="underwriting" style="--ac:#ff5533">
+            <div class="mcard-icon">📊</div>
+            <div class="mcard-title">Underwriting Desk</div>
+            <div class="mcard-desc">Mixed credit profiles. Contradictory signals. Predict actual outcomes.</div>
+            <div class="mcard-tag" style="background:rgba(255,85,51,.1);color:#ff5533;border:1px solid rgba(255,85,51,.25)">AMBIGUOUS</div>
+          </div>
+          <div class="mcard" data-m="hunter" style="--ac:#1fff8a">
+            <div class="mcard-icon">🎯</div>
+            <div class="mcard-title">Hunter Mode</div>
+            <div class="mcard-desc">Industry-specific traps. Visual signals. LinkedIn reads. Austin territory.</div>
+            <div class="mcard-tag" style="background:rgba(31,255,138,.1);color:#1fff8a;border:1px solid rgba(31,255,138,.25)">FIELD INTEL</div>
+          </div>
+          <div class="mcard" data-m="coach" style="--ac:#ffaa33">
+            <div class="mcard-icon">🎭</div>
+            <div class="mcard-title">First Meeting Sim</div>
+            <div class="mcard-desc">Walk into the room. Live AI roleplay. Hard owner personas. Brutal.</div>
+            <div class="mcard-tag" style="background:rgba(255,170,51,.1);color:#ffaa33;border:1px solid rgba(255,170,51,.25)">AI LIVE</div>
+          </div>
+          <div class="mcard" data-m="autopsy" style="--ac:#ff3d5a">
+            <div class="mcard-icon">🩻</div>
+            <div class="mcard-title">Deal Autopsy</div>
+            <div class="mcard-desc">Why did it die? Every answer seems reasonable. Pick the primary killer.</div>
+            <div class="mcard-tag" style="background:rgba(255,61,90,.1);color:#ff3d5a;border:1px solid rgba(255,61,90,.25)">POSTMORTEM</div>
+          </div>
+          <div class="mcard" data-m="conflict" style="--ac:#d4ff3f">
+            <div class="mcard-icon">⚔️</div>
+            <div class="mcard-title">Conflicting Signals</div>
+            <div class="mcard-desc">Every data point contradicts the last. No clean answer. Highest difficulty.</div>
+            <div class="mcard-tag" style="background:rgba(212,255,63,.1);color:#d4ff3f;border:1px solid rgba(212,255,63,.25)">ELITE ONLY</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TRAINING -->
+    <div class="scr" id="training-scr">
+      <div class="trn-wrap">
+        <div class="trn-head">
+          <button class="back-btn" id="back-btn">← Exit</button>
+          <div class="trn-title" id="trn-title">War Room</div>
+          <div style="display:flex;align-items:center;gap:8px">
+            <div class="streak-pill" id="streak-pill">🔥 <span id="streak-n">0</span></div>
+            <div class="score-disp" id="score-disp">0/0</div>
+          </div>
+        </div>
+        <div class="prog-bar"><div class="prog-f" id="prog-f" style="width:0%"></div></div>
+        <div class="case-area" id="case-area"></div>
+      </div>
+    </div>
+
+    <!-- COACH -->
+    <div class="scr" id="coach-scr">
+      <div class="chat-wrap">
+        <div class="chat-head">
+          <div class="coach-av">EC</div>
+          <div>
+            <div class="coach-nm">Elite Coach · Adversarial Mode</div>
+            <div class="coach-st">● Powered by Claude</div>
+          </div>
+        </div>
+        <div class="api-bar">
+          <label>API Key:</label>
+          <input class="api-inp" id="api-inp" type="password" placeholder="sk-ant-..." />
+          <button class="api-save" id="api-save">Save</button>
+          <span class="api-st" id="api-st">console.anthropic.com → free key</span>
+        </div>
+        <div class="coach-chips" id="coach-chips">
+          <div class="chip" data-p="I want to do a First Meeting Sim — walk me into an HVAC owner's office">First Meeting: HVAC</div>
+          <div class="chip" data-p="Roleplay as a conservative plumbing owner who pays cash for everything and hates debt">Persona: Cash Buyer</div>
+          <div class="chip" data-p="Challenge my assumption that TRAC is usually the right answer for growing businesses">Challenge My TRAC Bias</div>
+          <div class="chip" data-p="Give me a hard underwriting scenario with mixed signals and ask me to predict the outcome">Hard UW Scenario</div>
+          <div class="chip" data-p="Roleplay as a burned ex-lessee who had a terrible experience with a prior lease and is now hostile to the idea">Persona: Burned Lessee</div>
+          <div class="chip" data-p="Attack my weaknesses based on this profile and quiz me hard">Attack My Gaps</div>
+        </div>
+        <div class="chat-msgs" id="chat-msgs">
+          <div class="msg coach">
+            <div>I'm your adversarial coach. I don't validate you — I stress-test you.<br/><br/>I will roleplay hard owners, challenge every assumption, and force you to think like a business diagnostician. I will tell you when you're being lazy.<br/><br/>Use the chips above to jump into a scenario, or just talk. What are you working on?</div>
+            <div class="msg-time">COACH · READY</div>
+          </div>
+        </div>
+        <div class="chat-inp-area">
+          <input class="chat-inp" id="chat-inp" placeholder="Drop a scenario, ask a question, or start a roleplay..." />
+          <button class="chat-send" id="chat-send">Send</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- STATS -->
+    <div class="scr" id="stats-scr">
+      <div id="stats">
+        <div class="sec-title">Performance Intel</div>
+        <div class="stats-grid">
+          <div class="stat-card"><div class="stat-num" id="s-xp">0</div><div class="stat-lbl">Total XP</div></div>
+          <div class="stat-card"><div class="stat-num" id="s-acc">—</div><div class="stat-lbl">Accuracy</div></div>
+          <div class="stat-card"><div class="stat-num" id="s-streak">0</div><div class="stat-lbl">Best Streak</div></div>
+          <div class="stat-card"><div class="stat-num" id="s-conf">—</div><div class="stat-lbl">Avg Confidence</div></div>
+          <div class="stat-card"><div class="stat-num" id="s-over">0</div><div class="stat-lbl">Overconfident Misses</div></div>
+          <div class="stat-card"><div class="stat-num" id="s-calib">—</div><div class="stat-lbl">Calibration Score</div></div>
+        </div>
+        <div class="sec-title">Weakness Map</div>
+        <div class="weak-grid" id="weak-grid"></div>
+        <div class="sec-title">Brain Mastery</div>
+        <div id="brain-bars"></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════════════════════
+const LEVELS=[
+  {n:'ROOKIE',xp:0},{n:'ADVISOR',xp:250},{n:'CONSULTANT',xp:600},
+  {n:'STRATEGIST',xp:1200},{n:'OPERATOR',xp:2500},{n:'DEAL ARCHITECT',xp:4000},
+  {n:'EXEC ADVISOR',xp:6000},{n:'ELITE',xp:9000}
+];
+const BRAINS=['Business X-Ray','Capital Fit','Diagnostic Conv.','Deal Mechanics','Hunter','Exec Conv.','Failure Lab','Structuring'];
+const WEAK_CATS={
+  assumption:'Assumption Errors',
+  tax:'Tax / CPA Confusion',
+  underwriting:'Underwriting Gaps',
+  capital:'Capital Allocation',
+  questioning:'Poor Questioning',
+  structure:'Structure Mismatch',
+  timing:'Timing Misjudgment'
+};
+
+let G={
+  xp:0,correct:0,total:0,bestStreak:0,streak:0,
+  brainScores:Array(8).fill(0),brainAttempts:Array(8).fill(0),
+  weaknesses:{assumption:0,tax:0,underwriting:0,capital:0,questioning:0,structure:0,timing:0},
+  confidences:[],overconfident:0,totalConf:0,confCount:0,
+  difficulty:1,consecutiveCorrect:0
+};
+let MODE=null,Qs=[],QIdx=0,SesCorrect=0,SesTot=0,pendingConf=null;
+let apiKey='';
+let chatHistory=[];
+
+// ═══════════════════════════════════════════════════════════════════
+// GLOSSARY
+// ═══════════════════════════════════════════════════════════════════
+const GLOSSARY={
+  'TRAC':'Terminal Rental Adjustment Clause. A commercial lease where the lessee assumes residual value risk. At end of term, if the vehicle sells for more than the residual, lessee profits. If less, lessee pays the difference. Works best with predictable mileage and stable resale markets.',
+  'TIB':'Time In Business. How long a company has operated under its current entity. Lenders use this to assess credit risk — most want 2+ years. Under 18 months is high risk for commercial fleet financing.',
+  'LTV':'Loan-To-Value. The ratio of financing amount to collateral value. A truck worth $50k financed at $45k = 90% LTV. High LTV = more lender risk. Upside-down trades push LTV above 100%.',
+  'retained earnings':'Profits kept in the business rather than paid out as dividends or owner draws. A sign of financial health and reinvestment discipline. High retained earnings = business that generates and keeps cash.',
+  'credit line':'A revolving credit facility a business can draw on and repay. Used to bridge slow seasons, fund payroll, or cover working capital gaps. Having a credit line is a positive underwriting signal — it means a lender already vetted them.',
+  'upside down':'When the amount owed on a vehicle exceeds its current market value. Also called negative equity. If someone owes $38k on a truck worth $22k, they\'re $16k upside down. This negative equity must be rolled into new financing, increasing LTV and lender risk.',
+  'residual':'The estimated future value of a leased vehicle at the end of the lease term. Set at origination. If the residual is set too high relative to actual depreciation (especially with heavy use), the lessee faces a large balloon payment to close out.',
+  'working capital':'Current assets minus current liabilities. The cash and liquid resources available to run day-to-day operations. Tying working capital into depreciating vehicles can starve business growth.',
+  'balloon':'A large lump-sum payment due at the end of a loan or lease term. In TRAC leases, the balloon = the residual. If the vehicle\'s market value is below the residual, the lessee pays the difference.',
+  'personal guarantee':'When an individual (usually the business owner) personally promises to repay a business debt if the business cannot. Lenders require PGs from owners with less-established businesses or weaker credit profiles.',
+  'debt service':'The cash required to cover loan repayments — principal + interest — over a given period. Seasonal businesses with irregular revenue have irregular debt service capacity.',
+  'depreciation':'The decline in an asset\'s value over time. Vehicles depreciate fastest in their first few years. Lease residuals must accurately reflect expected depreciation based on usage, mileage, and market conditions.',
+};
+
+function glossify(text){
+  let t=text;
+  Object.keys(GLOSSARY).forEach(term=>{
+    const re=new RegExp('\\b('+term+')\\b','gi');
+    t=t.replace(re,'<span class="gloss-term" onclick="showGloss(\''+term+'\')">$1</span>');
+  });
+  return t;
+}
+function showGloss(term){
+  const p=document.getElementById('gloss-popup');
+  document.getElementById('gloss-term').textContent=term.toUpperCase();
+  document.getElementById('gloss-def').textContent=GLOSSARY[term]||'';
+  p.style.display='block';
+  p.style.top='80px';p.style.right='20px';
+}
+function closeGloss(){document.getElementById('gloss-popup').style.display='none';}
+document.addEventListener('click',e=>{
+  const p=document.getElementById('gloss-popup');
+  if(!p.contains(e.target)&&!e.target.classList.contains('gloss-term')) p.style.display='none';
+});
+
+// ═══════════════════════════════════════════════════════════════════
+// QUESTION BANKS — V2: AMBIGUOUS, CONFLICTING SIGNALS
+// ═══════════════════════════════════════════════════════════════════
+
+const RAPID_QS=[
+  {
+    label:'HVAC OPERATOR · CONFLICTING PROFILE',
+    conflict:true,
+    scenario:'12 vans. 42k miles/year average. Owner has been in business 14 years. He mentions: (1) hates debt, always has, (2) CPA told him leasing is a "tax trap," (3) sitting on $2M cash, (4) opening a second branch next quarter, (5) had a bad TRAC experience 6 years ago — residual was set wrong, he paid $18k at balloon, (6) repair costs on current fleet climbing, (7) emotionally says "I like owning what I work with."',
+    signals:[
+      {l:'Fleet',v:'12 vans, 42k mi/yr'},
+      {l:'Cash Position',v:'$2M on hand'},
+      {l:'Growth',v:'Second branch Q1'},
+      {l:'Debt Attitude',v:'Hates it'},
+      {l:'Prior Lease',v:'Bad experience, $18k balloon'},
+      {l:'CPA',v:'Anti-lease advice'},
+      {l:'Repairs',v:'Climbing on current fleet'}
+    ],
+    q:'You have 12 minutes in his office. What is your single most important move?',
+    opts:[
+      'A) Acknowledge the bad lease experience first — until that wound is addressed, nothing else lands',
+      'B) Focus on the repair cost trend — that\'s a quantifiable current pain that transcends the ownership debate',
+      'C) Ask what the second branch expansion requires capital-wise — growth changes the math on liquidity',
+      'D) Challenge the CPA\'s lease analysis — if the advice was general, the math may have been wrong'
+    ],
+    correct:0,
+    alsoViable:[2],
+    weakness:'assumption',
+    feedback:'The bad lease experience is an emotional anchor that poisons everything else. No cash flow argument, no repair-cost math, no CPA rebuttal lands while that wound is unaddressed. Acknowledge it first: "That sounds like the residual was structured wrong for your actual usage — what did the mileage look like on that deal?" You\'re not defending leasing. You\'re reopening the diagnosis. C is also valid but premature — you can\'t get to capital strategy while trust is negative.',
+    brain:2
+  },
+  {
+    label:'PLUMBING · SURFACE SIGNAL TRAP',
+    conflict:false,
+    scenario:'Family plumbing business. Three trucks. Owner\'s father started it in 1987. Owner (second generation) says: "nah man we\'re good, we just paid cash for a new truck last month." Revenue is $1.1M. You notice the other two trucks are 9 years old. He\'s been hiring two new techs this year.',
+    signals:[
+      {l:'Fleet',v:'3 trucks, 1 new, 2 aged 9yr'},
+      {l:'Capital',v:'Paid cash last month'},
+      {l:'Revenue',v:'$1.1M'},
+      {l:'Hiring',v:'2 new techs this year'},
+      {l:'Posture',v:'"We\'re good"'}
+    ],
+    q:'What does "we just paid cash for a truck last month" actually tell you?',
+    opts:[
+      'A) He\'s capital-sufficient and not a financing prospect right now',
+      'B) He\'s capital-active — buying trucks, hiring techs, aging fleet remaining. This is a fleet cycle conversation, not a single-truck conversation',
+      'C) He prefers ownership — align with that and pitch conventional financing for the next truck',
+      'D) His CPA likely drove the cash decision — find out what the tax advice was'
+    ],
+    correct:1,
+    alsoViable:[2],
+    weakness:'capital',
+    feedback:'Paying cash for one truck while aging two others and hiring two techs is not a closed story — it\'s an open one. He\'s in a fleet cycle. Two trucks at 9 years are approaching decision points. Two new techs need equipment. The question isn\'t "does he finance" — it\'s "what is his fleet replacement plan and what\'s it costing him in working capital?" C is reasonable but jumps to solution. B is correct because it reframes the conversation from one truck to fleet strategy.',
+    brain:1
+  },
+  {
+    label:'OILFIELD TRAP · HIGH MILEAGE ILLUSION',
+    conflict:true,
+    scenario:'West Texas oilfield services company. 9 trucks. 95k miles/year per vehicle on average. Owner is aggressive, growth-oriented, wants to add 3 more. Business is 4 years old, $3.8M revenue. Strong payment history. But: trucks are severely abused — road conditions, load stress, heat. Owner says "trucks are a tool, I don\'t baby them."',
+    signals:[
+      {l:'Mileage',v:'95k/yr average'},
+      {l:'Fleet',v:'9 trucks, adding 3'},
+      {l:'Revenue',v:'$3.8M'},
+      {l:'TIB',v:'4 years'},
+      {l:'Use',v:'Severe — oilfield, heat, load stress'},
+      {l:'Owner',v:'"Trucks are tools, I don\'t baby them"'}
+    ],
+    q:'Most advisors see high mileage + growth and think TRAC. What\'s the actual trap here?',
+    opts:[
+      'A) 95k miles is too high for any TRAC program — all lenders will decline',
+      'B) The residual assumption at origination will be based on mileage, not abuse severity. Actual depreciation from oilfield wear will outpace the residual — leaving the customer with balloon exposure even at projected mileage',
+      'C) The 4-year TIB means limited lender appetite — TRAC is unavailable',
+      'D) Growth businesses should always use conventional financing to build equity in their fleet'
+    ],
+    correct:1,
+    alsoViable:[],
+    weakness:'structure',
+    feedback:'This is a classic TRAC trap. Residuals are modeled on mileage curves, not abuse severity. A truck driven 95k miles in smooth highway delivery loses value differently than one hammered through oilfield terrain at 95k. At end of TRAC term, if the residual was set at $28k and the truck — due to severe mechanical wear — is worth $12k at auction, the operator eats $16k. High mileage doesn\'t automatically disqualify TRAC; wrong residual assumptions do. For brutal-use fleets, the structure must either be conventional (ownership) or TRAC with a very aggressive (low) residual.',
+    brain:7
+  },
+  {
+    label:'RESTORATION · TIMING AMBIGUITY',
+    conflict:true,
+    scenario:'Fire and water restoration company. $4.2M revenue. 8 trucks. Owner says: "timing sucks right now — we\'re stretched thin." But: hired 3 crew leads last month, added 2 new insurance carrier contracts, trucks average 7 years old. Seasonally, restoration peaks in spring/summer (storm season). It\'s currently February.',
+    signals:[
+      {l:'Revenue',v:'$4.2M'},
+      {l:'Fleet',v:'8 trucks, avg 7yr old'},
+      {l:'Recent',v:'3 hires, 2 new carrier contracts'},
+      {l:'Posture',v:'"Timing sucks right now"'},
+      {l:'Season',v:'February — pre-peak'}
+    ],
+    q:'"Timing sucks right now" — what is your read?',
+    opts:[
+      'A) Respect the timing objection — come back in April when they\'re busier and cash is flowing',
+      'B) "Timing sucks" during a growth period (hiring, new contracts) usually means cash is tight from investment, not from decline — which is actually the best argument for financing',
+      'C) February is the right time to act — fleet decisions made before peak season avoid the operational chaos of Q2 delivery and setup',
+      'D) Probe deeper before concluding either way — "stretched thin" could mean operationally overwhelmed, cash-constrained, or both, and each has a different implication'
+    ],
+    correct:3,
+    alsoViable:[1,2],
+    weakness:'questioning',
+    feedback:'"Timing sucks" is never a diagnosis — it\'s a feeling. D is correct because B and C are both reasonable conclusions from the visible data, but you haven\'t confirmed which kind of "stretched" this is. Operational overwhelm = bad time for a deal conversation. Cash-constrained from growth investment = the exact right time to introduce financing. You don\'t know yet. The question that unlocks it: "When you say stretched — is that more about capacity or cash right now?" One sentence. Opens everything.',
+    brain:2
+  },
+  {
+    label:'POOL SERVICE · MILEAGE TRAP',
+    conflict:false,
+    scenario:'Pool route company. 18 trucks. Very predictable routes — same neighborhoods, same stops. Average mileage: 19k/year per vehicle. Owner is methodical, has spreadsheets for everything. Cash-positive, no debt. Business 11 years old. Fleet average age: 5 years. He says "we usually just pay cash — keeps things simple."',
+    signals:[
+      {l:'Mileage',v:'19k/yr — very predictable'},
+      {l:'Fleet',v:'18 trucks, avg 5yr'},
+      {l:'Cash',v:'Cash-positive, no debt'},
+      {l:'TIB',v:'11 years'},
+      {l:'Owner',v:'Analytical, spreadsheet-driven'}
+    ],
+    q:'This looks like a textbook TRAC candidate. What is the actual best recommendation?',
+    opts:[
+      'A) TRAC — predictable mileage makes residual modeling accurate, payment structure frees capital',
+      'B) Conventional financing — they\'re cash-positive, analytical, and already own. Equity building aligns with their mindset',
+      'C) Cash continues to make sense — they have the capital and the simplicity preference has real value for an operator this size',
+      'D) The answer depends entirely on what they plan to do with fleet capital — without knowing their reinvestment pipeline, any recommendation is premature'
+    ],
+    correct:3,
+    alsoViable:[0,2],
+    weakness:'assumption',
+    feedback:'This is an assumption trap. The spreadsheet detail is the key signal — this owner responds to math, not product. A, B, and C are ALL defensible depending on their capital deployment plan. If they have no reinvestment need, cash or conventional may genuinely be correct. If they\'re about to expand routes or hire, freeing capital via TRAC has real value. D forces the right conversation: "What are you planning to do with that capital if it weren\'t in trucks?" That one question changes the recommendation.',
+    brain:1
+  },
+  {
+    label:'COURIER · GROWTH ILLUSION',
+    conflict:true,
+    scenario:'Medical courier. 7 vans. Adding one new hospital route contract per month. 22-month-old business. Owner is aggressive, says "we\'re growing 40% year over year." Personal credit: 680. Business credit: thin file. He wants to add 4 vans immediately. Has a $150k SBA line he hasn\'t drawn on.',
+    signals:[
+      {l:'Growth',v:'40% YoY, 1 route/mo'},
+      {l:'TIB',v:'22 months'},
+      {l:'Personal Credit',v:'680'},
+      {l:'Biz Credit',v:'Thin file'},
+      {l:'Capital',v:'$150k SBA line (undrawn)'},
+      {l:'Ask',v:'4 vans now'}
+    ],
+    q:'The growth story is compelling. What is the underwriting reality?',
+    opts:[
+      'A) 22 months TIB with thin business credit limits most conventional lenders — this likely goes specialty, with PG required and possibly a down payment',
+      'B) The $150k undrawn SBA line is a strong positive signal — lenders will view this as available liquidity and approve the deal',
+      'C) 680 personal credit with 40% revenue growth usually unlocks prime commercial rates — the growth offsets the thin file',
+      'D) Medical courier contracts are considered stable recurring revenue — many lenders will treat this as near-prime regardless of TIB'
+    ],
+    correct:0,
+    alsoViable:[1],
+    weakness:'underwriting',
+    feedback:'22-month TIB is the hard floor problem. Most prime lenders require 24 months minimum. 680 personal credit is subprime. Thin business credit file means no trade references. The undrawn SBA line (B) is a mild positive — it shows lender vetting — but it doesn\'t overcome the TIB and credit file. 40% growth (C) is revenue, not profitability — lenders underwrite cash flow, not top-line. The likely path: specialty commercial lender, personal guarantee, possible down payment. Good credit prep conversation: "Have you ever run commercial credit on the business entity itself?"',
+    brain:3
+  },
+  {
+    label:'ELECTRICAL · CAPITAL TRAP',
+    conflict:true,
+    scenario:'Electrical contractor. 11 trucks. $5.1M revenue. 8 years in business. Excellent credit. The trap: owner is about to invest $800k into a commercial property purchase (his shop building). He says "yeah we should probably do something about the fleet." Three trucks are 10+ years old.',
+    signals:[
+      {l:'Fleet',v:'11 trucks, 3 at 10+ years'},
+      {l:'Revenue',v:'$5.1M'},
+      {l:'Credit',v:'Excellent'},
+      {l:'TIB',v:'8 years'},
+      {l:'Capital Event',v:'$800k property purchase pending'}
+    ],
+    q:'What changes about this deal given the pending property purchase?',
+    opts:[
+      'A) Nothing — fleet and real estate are separate decisions and shouldn\'t be conflated',
+      'B) The property purchase will consume significant liquidity and may affect their debt-to-income ratios for commercial lenders — timing matters',
+      'C) The property purchase is actually a positive signal — owners who buy commercial property are stable and creditworthy',
+      'D) Wait until after the property purchase closes before bringing up fleet financing'
+    ],
+    correct:1,
+    alsoViable:[2],
+    weakness:'timing',
+    feedback:'Large capital events change the financing picture. An $800k property purchase may involve an SBA loan or commercial mortgage, which creates new debt obligations and potentially reduces borrowing capacity. It may also consume cash reserves needed for down payments. C is a true statement but incomplete — creditworthiness alone doesn\'t determine capacity. D (wait) is actually the wrong move — you want to close the fleet deal BEFORE the property closes, while their debt ratios are still clean. Timing is everything.',
+    brain:3
+  },
+  {
+    label:'DUMP TRUCK · OBVIOUS TRAP',
+    conflict:false,
+    scenario:'Construction material hauler. 4 dump trucks. 110k miles/year. Owner\'s trucks are destroyed by age 5. He replaces them on a cycle — always buys used at $60-75k, runs them to death, sells for scrap. "We\'ve done it this way forever, works fine for us."',
+    signals:[
+      {l:'Mileage',v:'110k/yr'},
+      {l:'Fleet',v:'4 dump trucks'},
+      {l:'Cycle',v:'Buy used ~$65k, run to death, scrap'},
+      {l:'Posture',v:'"Works fine for us"'}
+    ],
+    q:'What is the single worst recommendation for this operator?',
+    opts:[
+      'A) TRAC lease with a standard residual assumption',
+      'B) Conventional financing on used equipment at current market prices',
+      'C) Continue current cash/used purchase cycle but introduce financing to preserve liquidity',
+      'D) New equipment with a longer warranty to reduce the maintenance burden'
+    ],
+    correct:0,
+    alsoViable:[],
+    weakness:'structure',
+    feedback:'TRAC on equipment driven to scrap is the worst possible fit. TRAC residuals assume the vehicle retains value — that\'s the entire mechanism. This operator treats trucks as consumables. At 110k miles/year of dump truck abuse, a vehicle with a $35k TRAC residual will be worth $5k. The customer eats the difference. B, C, and D all have merit depending on their capital position. This case tests whether you recognize deal-killer mismatches, not just best-fit scenarios.',
+    brain:7
+  }
+];
+
+const DETECTIVE_QS=[
+  {
+    label:'OBJECTION · REAL LANGUAGE',
+    conflict:false,
+    scenario:'You cold-called a roofing company owner. He says: "honestly just not looking right now, we\'re in the middle of a bunch of stuff."',
+    signals:[
+      {l:'Channel',v:'Cold call'},
+      {l:'Statement',v:'"Not looking right now"'},
+      {l:'Context',v:'"Middle of a bunch of stuff"'}
+    ],
+    q:'What is the most diagnostic next question?',
+    opts:[
+      'A) "Totally get it — what\'s the best time to check back in?"',
+      'B) "What\'s going on with the fleet side of things right now?"',
+      'C) "Are you the right person for fleet decisions, or is there someone else involved?"',
+      'D) "When you say \'not looking\' — is that more about timing or not having an immediate need?"'
+    ],
+    correct:3,
+    alsoViable:[1],
+    weakness:'questioning',
+    feedback:'D separates two completely different objection types: timing (a real but solvable issue) vs. no need (requires a different conversation). B is also good — it creates a natural segue without fighting the objection. A is the trap: it accepts the deflection and schedules a future deflection. C is useful but premature — authority is secondary to understanding whether there\'s a real fit. The sequence matters: first understand the objection type, then probe for need, then check authority.',
+    brain:2
+  },
+  {
+    label:'OBJECTION · CPA INFLUENCE',
+    conflict:false,
+    scenario:'Mid-conversation, owner of a 9-truck HVAC company says: "my CPA hates leases. She says we\'re better off owning." He nods like the conversation is over.',
+    signals:[
+      {l:'CPA Stance',v:'Anti-lease'},
+      {l:'Owner Posture',v:'Nodding — treating it as closed'},
+      {l:'Fleet',v:'9 trucks'}
+    ],
+    q:'What is your best response?',
+    opts:[
+      'A) "What specifically did she run the numbers on — was it a TRAC analysis or general leasing?"',
+      'B) "A lot of CPAs default to that — the tax picture is only part of the equation, the capital allocation side is different"',
+      'C) "Can I put together a side-by-side comparison to share with her directly?"',
+      'D) "When did she give you that advice? Fleet financing has changed a lot recently."'
+    ],
+    correct:0,
+    alsoViable:[2],
+    weakness:'tax',
+    feedback:'A is the precision move — you\'re not arguing with the CPA, you\'re discovering what she actually modeled. Most general tax advice on leasing is based on operating leases and personal tax scenarios, not commercial TRAC structures. B is too confrontational this early — you\'re labeling her advisor as wrong before you know what she analyzed. C (involving the CPA directly) is bold and occasionally correct, but premature before you know what the actual advice was. D is weak — it implies the CPA is outdated, which is defensive. Start with discovery.',
+    brain:2
+  },
+  {
+    label:'OBJECTION · THE NON-OBJECTION',
+    conflict:false,
+    scenario:'You\'ve been talking to a courier company owner for 12 minutes. She\'s been friendly, asked a few questions, and says: "send me whatever you\'ve got and I\'ll take a look."',
+    signals:[
+      {l:'Tone',v:'Friendly'},
+      {l:'Engagement',v:'12 minutes, a few questions'},
+      {l:'Close',v:'"Send me whatever"'}
+    ],
+    q:'What has actually happened in this conversation?',
+    opts:[
+      'A) She\'s interested but needs time to review — send a comprehensive proposal',
+      'B) She\'s friendly but noncommittal. No urgency, no pain identified, no next step established. This deal has no momentum.',
+      'C) Twelve minutes of conversation is enough to send a targeted proposal — you know the basics',
+      'D) Ask what specifically she wants in the proposal so you can tailor it'
+    ],
+    correct:1,
+    alsoViable:[3],
+    weakness:'questioning',
+    feedback:'"Send me whatever" after a friendly 12-minute call is a polite exit, not buying intent. B is the accurate read. D is actually a solid save move — it forces specificity, which either creates real engagement or reveals there isn\'t any. A is dangerous: sending a comprehensive proposal into this vacuum will get you ghosted. The correct move after B\'s diagnosis: "Happy to — before I do, help me understand what would need to be true for this to make sense for your operation. What problem are we actually solving?" If she can\'t answer, you\'re fishing.',
+    brain:2
+  },
+  {
+    label:'OBJECTION · EXISTING LENDER',
+    conflict:false,
+    scenario:'Fleet manager of a pest control company (22 trucks): "our current guy handles us — been with them for six years." He says it warmly, not defensively.',
+    signals:[
+      {l:'Relationship',v:'6 years, warm tone'},
+      {l:'Fleet',v:'22 trucks'},
+      {l:'Role',v:'Fleet manager (not owner)'}
+    ],
+    q:'What is the single most important thing to understand here?',
+    opts:[
+      'A) What the existing lender\'s rates look like — if you can beat them, you have a shot',
+      'B) Whether the fleet manager has authority to change vendors, or whether that decision sits with an owner or CFO',
+      'C) What the fleet manager\'s pain points are within the current relationship — six years doesn\'t mean zero friction',
+      'D) What the renewal cycle looks like on the current fleet — existing relationships don\'t block future deals'
+    ],
+    correct:1,
+    alsoViable:[2,3],
+    weakness:'questioning',
+    feedback:'Authority is the hidden variable here. A fleet manager recommends — an owner or CFO decides. Six-year vendor relationships rarely get changed at the fleet manager level without executive buy-in. B is the first move: understand who actually has the authority to change this relationship, and whether you\'re talking to the right person. C and D are both valid as follow-on moves, but premature if you\'re navigating to the wrong decision-maker. Note: "handles us" from a fleet manager may also mean "my job is easier not changing this" — a political reason, not a financial one.',
+    brain:2
+  },
+  {
+    label:'OBJECTION · CASH BUYER',
+    conflict:true,
+    scenario:'Owner of a 6-truck landscaping company: "we usually just pay cash. We\'ve always done it that way. Dad ran the business the same way. Honestly it just keeps things simple." He says it like it\'s settled.',
+    signals:[
+      {l:'History',v:'Always paid cash'},
+      {l:'Culture',v:'Family business, generational habit'},
+      {l:'Framing',v:'"Keeps things simple"'}
+    ],
+    q:'What is the most important thing to understand before responding?',
+    opts:[
+      'A) Whether paying cash is the right financial decision for their specific capital position — it may or may not be',
+      'B) What "simple" means to him — is simplicity about avoiding paperwork, avoiding risk, or avoiding conversations like this one',
+      'C) How much cash they\'re deploying per truck and what that capital could alternatively be doing in the business',
+      'D) Whether the generational habit has ever been formally analyzed against alternatives'
+    ],
+    correct:1,
+    alsoViable:[0,2,3],
+    weakness:'capital',
+    feedback:'This is the hardest question on this list — A, B, C, and D are ALL defensible first moves, which is the point. B edges out because "keeps things simple" is an emotional anchor, and the emotional reason often protects all other reasons. If "simple" means "I don\'t trust financing," your math won\'t move him. If "simple" means "I hate paperwork," that\'s solvable. Understand the meaning before challenging the logic. A, C, and D are the right follow-on moves once you understand what simplicity actually protects.',
+    brain:2
+  }
+];
+
+const STRUCTURE_QS=[
+  {
+    label:'STRUCTURE · DEAL KILLER TEST',
+    conflict:true,
+    scenario:'Growing landscaping company. 8 trucks. 55k miles/year on average. Owner is excited about TRAC — heard from another operator it\'s great. Business 6 years old, good credit. But: trucks are work vehicles, hauling heavy equipment, getting dinged, exposed to weather and chemicals. Owner says "I\'m not a babysitter — they work hard."',
+    signals:[
+      {l:'Mileage',v:'55k/yr'},
+      {l:'TIB',v:'6 years'},
+      {l:'Credit',v:'Good'},
+      {l:'Use',v:'Heavy equipment hauling, chemical exposure, hard use'},
+      {l:'Owner Stance',v:'TRAC-curious, not careful with trucks'}
+    ],
+    q:'The owner wants TRAC and the mileage supports it. What\'s the actual risk?',
+    opts:[
+      'A) TRAC is the right call — 55k is within standard program parameters and good credit gets prime rates',
+      'B) TRAC may work if the residual is set conservatively, accounting for hard use — standard residual assumptions will overprice the truck\'s actual end-of-term value',
+      'C) Conventional financing is better here — equity builds despite the hard use, and there\'s no balloon exposure',
+      'D) Defer TRAC until you can assess actual wear patterns — one cycle of ownership data would eliminate the residual risk'
+    ],
+    correct:1,
+    alsoViable:[2],
+    weakness:'structure',
+    feedback:'B is correct: TRAC can work, but only with accurate residual modeling. "Standard" residuals assume normal commercial use. Chemical exposure, physical abuse, and equipment hauling accelerate depreciation beyond mileage-based curves. If you set a $28k residual on a truck that will be worth $16k due to condition, the customer faces a $12k surprise. C is also valid — ownership eliminates residual risk entirely, and equity accumulates regardless of condition (though value may be lower). The job of a good advisor: explain both paths, including the risk of each.',
+    brain:7
+  },
+  {
+    label:'STRUCTURE · LONG HOLD ECONOMICS',
+    conflict:false,
+    scenario:'Third-generation family plumbing business. 4 trucks. Owner says trucks are replaced every 10-12 years. Current trucks are 6, 7, 8, and 9 years old. Business cash flow is strong. No debt. Owner says "the trucks don\'t make money — the plumbers do. Trucks are just how we get there."',
+    signals:[
+      {l:'Hold Period',v:'10-12 years'},
+      {l:'Fleet Age',v:'6, 7, 8, 9 years'},
+      {l:'Cash Flow',v:'Strong'},
+      {l:'Philosophy',v:'Trucks are overhead, not assets'}
+    ],
+    q:'Which structure aligns best with this operator\'s economic reality?',
+    opts:[
+      'A) TRAC — even with long holds, the payment structure frees cash for other deployment',
+      'B) Conventional financing — long holds favor ownership as equity builds and payments end before the vehicle\'s useful life does',
+      'C) Cash purchase — strong cash flow, no debt culture, and a utilitarian view of trucks suggests cash is simplest and correct',
+      'D) A hybrid approach — finance 2 trucks now, cash the other 2, to hedge capital allocation'
+    ],
+    correct:1,
+    alsoViable:[2],
+    weakness:'structure',
+    feedback:'B and C are both defensible, which makes this harder than it looks. Long-hold economics strongly favor ownership: a 72-month conventional loan paid off in year 6 means the truck works for free for the remaining 4-6 years. TRAC (A) is structured around cycling — the residual is only attractive if you return the vehicle. At a 10-12 year hold, TRAC becomes ownership anyway (you buy out the balloon), but with less favorable economics. C works if their capital has no better use — but at $1M+ revenue, there\'s usually somewhere better for $40k than a depreciating truck.',
+    brain:7
+  },
+  {
+    label:'STRUCTURE · GROWTH LIQUIDITY TEST',
+    conflict:true,
+    scenario:'Fire restoration company. $2.8M revenue, 7 trucks, growing 35% YoY. Owner just signed 3 new insurance carrier contracts. Wants 4 more trucks. His language: "we\'re going to be at $5M in 18 months, I just need the trucks." Cash on hand: $180k. Monthly payroll: $95k.',
+    signals:[
+      {l:'Revenue',v:'$2.8M, +35% YoY'},
+      {l:'Cash',v:'$180k on hand'},
+      {l:'Payroll',v:'$95k/month'},
+      {l:'Ask',v:'4 trucks immediately'},
+      {l:'New Contracts',v:'3 insurance carriers'}
+    ],
+    q:'He has $180k cash. Should he put it into trucks?',
+    opts:[
+      'A) Yes — owning trucks builds equity and reduces monthly payment obligations',
+      'B) No — $180k covers under 2 months of payroll. For a growth company, this cash should not be immobilized in depreciating assets',
+      'C) It depends on whether he has access to a credit line for operational float',
+      'D) Partially — use $60k as down payments across 4 trucks to reduce monthly payments'
+    ],
+    correct:1,
+    alsoViable:[2],
+    weakness:'capital',
+    feedback:'$180k cash at $95k/month payroll = 1.9 months of operating runway. For a company growing at 35% YoY while adding contracts and headcount, that cash is the operating buffer. Immobilizing it in trucks — which can be financed — is a capital allocation error. B is correct. C is also valid: if he has a credit line, the cash math changes. D sounds prudent but is a version of the same mistake at smaller scale. The advisor move: "If you finance the trucks and preserve that $180k, what does that capital do for you in the next 90 days?"',
+    brain:1
+  }
+];
+
+const CONFLICT_QS=[
+  {
+    label:'MAXIMUM AMBIGUITY · CONFLICTING PROFILE',
+    conflict:true,
+    scenario:'You\'re meeting a 47-year-old HVAC owner. 16 trucks. $4.4M revenue. 19 years in business. Here\'s what you learn in the first 10 minutes: (1) He owns all trucks, always has. (2) Just had his best year ever. (3) Three trucks are 11+ years old and have been in the shop 3x this year. (4) Opening a new location in March. (5) His controller (not a CPA) told him leasing is "just renting." (6) He has a $400k equipment line he\'s never drawn on. (7) He\'s skeptical of you — had a bad experience with a finance rep 3 years ago who oversold him. (8) His gut instinct: "I just like knowing I own my equipment." (9) Cash in the bank: around $600k. (10) Trucks average 48k miles/year.',
+    signals:[
+      {l:'TIB',v:'19 years'},
+      {l:'Revenue',v:'$4.4M, best year ever'},
+      {l:'Fleet',v:'16 trucks, 3 at 11+ years, 3x shop visits'},
+      {l:'Cash',v:'~$600k'},
+      {l:'Credit Line',v:'$400k equipment line, undrawn'},
+      {l:'Growth',v:'New location March'},
+      {l:'Baggage',v:'Bad rep experience 3 years ago'},
+      {l:'Controller',v:'"Leasing is just renting"'},
+      {l:'Mileage',v:'48k/yr average'},
+      {l:'Posture',v:'Skeptical, ownership-oriented'}
+    ],
+    q:'10 minutes in. What is your ONE priority for the next 5 minutes?',
+    opts:[
+      'A) Address the bad experience with the prior rep — trust is the foundation of everything else',
+      'B) Focus on the 3 trucks that\'ve been in the shop 3x — that\'s quantifiable current pain',
+      'C) Understand what opening a new location requires from a capital perspective',
+      'D) Ask what "I like knowing I own my equipment" actually means to him — ownership can mean security, control, or habit'
+    ],
+    correct:3,
+    alsoViable:[0,1,2],
+    weakness:'questioning',
+    feedback:'This is the hardest question in the simulator. A, B, C, and D are all correct first moves — which is exactly the point. Elite advisors debate this in their head. The argument for D: before you can leverage any of the other entry points, you need to understand the emotional architecture of the ownership belief. If "I like owning" means "I don\'t trust financing" (emotional/trust), no amount of maintenance math will move him. If it means "I like the optionality" (rational), you can reframe. The argument for A: the bad rep experience may be poisoning the entire conversation invisibly. The argument for B: maintenance pain is provable, and provable pain is more actionable than philosophy. There is no clean answer here — your job is to choose deliberately, not randomly.',
+    brain:2
+  },
+  {
+    label:'UNDERWRITING · TRUE AMBIGUITY',
+    conflict:true,
+    scenario:'Credit profile: 638 personal FICO. Business: 3.1 years TIB. $2.2M annual revenue. Seasonal cash flow (landscaping — strong April–October, slow November–March). Current truck: upside down $14k. Owner is offering: $25k cash injection as down payment. Personal guarantee available. Business has no derogatory marks. Has $180k equipment line with local bank (never defaulted).',
+    signals:[
+      {l:'FICO',v:'638 — subprime'},
+      {l:'TIB',v:'3.1 years'},
+      {l:'Revenue',v:'$2.2M'},
+      {l:'Cash Flow',v:'Seasonal — landscape'},
+      {l:'Trade',v:'Upside down $14k'},
+      {l:'Down Payment',v:'$25k offered'},
+      {l:'PG',v:'Available'},
+      {l:'Bank Line',v:'$180k, never defaulted'}
+    ],
+    q:'What is the most accurate prediction of the underwriting outcome?',
+    opts:[
+      'A) Decline — the combination of subprime credit, seasonal cash flow, and upside-down trade is too much for any lender',
+      'B) Approval possible through specialty commercial lender — down payment absorbs trade equity, PG mitigates credit risk, existing bank relationship is a strong positive, and 3+ year TIB clears most minimums',
+      'C) Approval at prime rates — the $2.2M revenue and cash injection offset the credit profile',
+      'D) Needs to wait 9 more months until TIB reaches 4 years before any lender will touch it'
+    ],
+    correct:1,
+    alsoViable:[],
+    weakness:'underwriting',
+    feedback:'This is a genuinely mixed profile — not a clean approve or decline. B is the accurate read. Here\'s the math: $14k upside-down trade absorbed by $25k down payment leaves $11k to reduce financing. The remaining balance at 638 FICO goes to specialty commercial lenders (not prime banks). The $180k bank equipment line is crucial — it means a commercial lender already vetted this business and has ongoing exposure. That\'s a real credit positive. PG + down payment + existing lender relationship + 3.1 TIB = approvable, not prime, probably 1-2 units initially. A is too pessimistic; C is too optimistic; D is wrong (3.1 years clears most 2-year minimums).',
+    brain:3
+  }
+];
+
+const HUNTER_QS=[
+  {
+    label:'FIELD INTEL · INDUSTRIAL PARK',
+    conflict:false,
+    scenario:'Driving through North Austin near 183/Rundberg. You see a yard: 11 white vans, unbranded, mix of ages (some newer, some beat up). Sign reads "Apex Mechanical Services." A job posting in the window: "HVAC Tech — Must have own tools. $28-36/hr. FT."',
+    signals:[
+      {l:'Fleet',v:'11 vans, mixed ages, unbranded'},
+      {l:'Location',v:'North Austin industrial'},
+      {l:'Hiring',v:'HVAC tech posting visible'},
+      {l:'Branding',v:'None on vehicles'}
+    ],
+    q:'You have 30 seconds before you drive past. What is your read?',
+    opts:[
+      'A) High-value target: unbranded mixed-age fleet + active hiring = fleet expansion need incoming, likely no formalized fleet strategy',
+      'B) Low priority: they\'re hiring techs who bring their own tools — probably a small shop that doesn\'t buy fleet vehicles',
+      'C) Medium priority: the unbranded fleet suggests cost-conscious culture that will be hard to move on financing',
+      'D) Need more data — can\'t assess from a drive-by'
+    ],
+    correct:0,
+    alsoViable:[],
+    weakness:'questioning',
+    feedback:'B is the obvious trap — "must have own tools" refers to hand tools, not vehicles. HVAC companies always own the vans; techs own their personal tools. The visual signals here are clear: unbranded mixed-age fleet = (1) no fleet branding program = unsophisticated fleet management, (2) mixed ages = no systematic replacement cycle, (3) active hiring = growth, which means more trucks. A is correct. C conflates "unbranded" with "price sensitive" — many unbranded operators have strong cash positions and just haven\'t been approached with the right framing.',
+    brain:4
+  },
+  {
+    label:'LINKEDIN · SIGNAL READ',
+    conflict:false,
+    scenario:'You see this LinkedIn post: "Excited to announce we\'re launching our third service territory in the Austin metro! Huge thanks to our team of 24 who make this possible. 🚀 If you know any experienced plumbers looking for a home, send them our way." Company page shows: founded 2019, 24 employees.',
+    signals:[
+      {l:'Expansion',v:'3rd service territory'},
+      {l:'Team',v:'24 employees'},
+      {l:'Hiring',v:'Actively recruiting plumbers'},
+      {l:'Founded',v:'2019 (6 years TIB)'}
+    ],
+    q:'What commercial signals are in this post?',
+    opts:[
+      'A) Third territory + active plumber hiring = fleet expansion is imminent. New territory requires vehicles before techs can generate revenue.',
+      'B) The post is a culture/PR move — doesn\'t indicate fleet need without more direct signals',
+      'C) 24 employees for a plumbing company is relatively small — probably owner-operated vans, not a fleet program',
+      'D) Founded 2019 is useful — 6 years TIB is strong for commercial financing, and the growth trajectory suggests a good credit profile'
+    ],
+    correct:0,
+    alsoViable:[3],
+    weakness:'questioning',
+    feedback:'A is the primary signal — territory expansion always requires vehicles before it generates revenue. You cannot run plumbing routes without trucks. B is the trap answer for over-analyzers: social posts often do telegraph real operational moves. D is a useful supporting detail (TIB, credit) but isn\'t the headline. The outreach here is precise: "Saw you\'re launching your third territory — curious how you\'re thinking about the fleet side as you scale into that new area." That\'s a question, not a pitch. Lands in 15 seconds.',
+    brain:4
+  }
+];
+
+const AUTOPSY_QS=[
+  {
+    label:'DEAL AUTOPSY · GHOST',
+    conflict:false,
+    scenario:'You spent three meetings with an electrical contractor owner. He was engaged, asked detailed questions about TRAC, had you run three different payment scenarios. At the end of your third meeting he said "let\'s do it" and asked you to get started. You submitted. He stopped responding. Four follow-ups. Nothing.',
+    signals:[
+      {l:'Engagement',v:'3 meetings, detailed questions'},
+      {l:'Close',v:'"Let\'s do it" verbally'},
+      {l:'Submission',v:'Submitted to lender'},
+      {l:'Follow-up',v:'4 attempts, no response'}
+    ],
+    q:'What most likely happened?',
+    opts:[
+      'A) A competing lender came in with better numbers and he went elsewhere without telling you',
+      'B) An internal authority — partner, spouse, CPA, or investor — rejected the deal after your last meeting, and he doesn\'t have the courage to tell you',
+      'C) The lender\'s process or delay eroded his urgency and the deal fell into inaction',
+      'D) He was never really the final decision-maker — "let\'s do it" was premature enthusiasm without authority'
+    ],
+    correct:1,
+    alsoViable:[3],
+    weakness:'questioning',
+    feedback:'This is a ghosting pattern, not a rate-shopped pattern. Rate-shopped customers usually respond quickly with a counter ("I got a better offer — can you match it?"). The silence after a verbal "let\'s do it" almost always means an internal veto that the contact is too uncomfortable to communicate. B and D are both possibilities in the same category: hidden authority. The forensic question: before your third meeting, did you ever ask "who else needs to be part of this decision before we move?" If not, that\'s the diagnostic gap. "Let\'s do it" from someone without full authority is the most dangerous signal in commercial sales.',
+    brain:6
+  },
+  {
+    label:'DEAL AUTOPSY · STRUCTURE KILL',
+    conflict:false,
+    scenario:'You closed a 6-truck TRAC deal with a courier company. 4-year term, $22k residual per unit, 60k mile assumption. End of lease: customer owes $14k per truck because actual market value was $8k. He\'s furious. Threatening to not renew. Calls it a "scam."',
+    signals:[
+      {l:'Structure',v:'TRAC, 4yr, $22k residual, 60k mi'},
+      {l:'Actual Use',v:'Higher than 60k or harder use?'},
+      {l:'Outcome',v:'$14k balloon per truck'},
+      {l:'Customer',v:'Furious, threatening to leave'}
+    ],
+    q:'What killed this deal in the structuring phase?',
+    opts:[
+      'A) The customer should have understood TRAC mechanics before signing — this is a buyer education failure',
+      'B) The residual was set at $22k without stress-testing actual courier depreciation curves — courier vehicles in urban use depreciate faster than standard assumptions',
+      'C) A 4-year term is too long for any TRAC structure — should have been 36 months',
+      'D) The mileage assumption of 60k was probably accurate — the market depreciation shock is what couldn\'t have been predicted'
+    ],
+    correct:1,
+    alsoViable:[],
+    weakness:'structure',
+    feedback:'B is the root cause. Residuals must be stress-tested against actual use case, not generic fleet assumptions. Courier vehicles in urban use — stop-and-go, high door cycles, curb rash, interior wear — depreciate faster than delivery or service vehicles with similar mileage. The advisor\'s job at origination is to ask: "What does this vehicle actually look like at 60k miles in your operation?" If you can\'t answer that question accurately, you\'re guessing on the residual. A (buyer education) is a true contributing factor but not the root cause — the structure itself was miscalibrated. D absolves the advisor prematurely.',
+    brain:7
+  }
+];
+
+const ALL_MODES={
+  rapid:{title:'⚡ Rapid Diagnosis',cases:RAPID_QS,brain:0},
+  detective:{title:'🔍 Root Cause Detective',cases:DETECTIVE_QS,brain:2},
+  structure:{title:'🏗️ Structuring Lab',cases:STRUCTURE_QS,brain:7},
+  underwriting:{title:'📊 Underwriting Desk',cases:CONFLICT_QS.filter((_,i)=>i===1),brain:3},
+  hunter:{title:'🎯 Hunter Mode',cases:HUNTER_QS,brain:4},
+  autopsy:{title:'🩻 Deal Autopsy',cases:AUTOPSY_QS,brain:6},
+  conflict:{title:'⚔️ Conflicting Signals',cases:CONFLICT_QS,brain:0},
+};
+
+// ═══════════════════════════════════════════════════════════════════
+// UI / NAV
+// ═══════════════════════════════════════════════════════════════════
+function getLevel(){for(let i=LEVELS.length-1;i>=0;i--)if(G.xp>=LEVELS[i].xp)return LEVELS[i];return LEVELS[0];}
+function getNextLevel(){const idx=LEVELS.findIndex(l=>l.n===getLevel().n);return LEVELS[idx+1]||null;}
+
+function updateUI(){
+  const lv=getLevel(),nx=getNextLevel();
+  document.getElementById('lv-badge').textContent=lv.n;
+  document.getElementById('xp-txt').textContent=G.xp+' XP';
+  const pct=nx?Math.round(((G.xp-lv.xp)/(nx.xp-lv.xp))*100):100;
+  document.getElementById('xp-f').style.width=pct+'%';
+  document.getElementById('s-xp').textContent=G.xp;
+  document.getElementById('s-acc').textContent=G.total?Math.round((G.correct/G.total)*100)+'%':'—';
+  document.getElementById('s-streak').textContent=G.bestStreak;
+  document.getElementById('s-conf').textContent=G.confCount?Math.round(G.totalConf/G.confCount)+'%':'—';
+  document.getElementById('s-over').textContent=G.overconfident;
+  const calib=G.confCount&&G.total?Math.max(0,100-Math.abs(Math.round(G.totalConf/G.confCount)-(Math.round((G.correct/G.total)*100)))):null;
+  document.getElementById('s-calib').textContent=calib!==null?calib+'%':'—';
+  renderWeakGrid();
+  renderBrainBars();
+  updateWeakDot();
+}
+
+function updateWeakDot(){
+  const top=Object.entries(G.weaknesses).sort((a,b)=>b[1]-a[1]);
+  const dot=document.getElementById('weak-dot');
+  const total=Object.values(G.weaknesses).reduce((a,b)=>a+b,0);
+  dot.setAttribute('data-count',total);
+  dot.style.background=total>5?'var(--red)':total>2?'var(--amb)':'var(--b2)';
+  const tt=document.getElementById('weak-tt');
+  if(total===0){tt.textContent='No weaknesses tracked yet.';return;}
+  tt.innerHTML='<strong style="color:var(--txt);display:block;margin-bottom:6px">Weakness Profile:</strong>'+
+    top.filter(w=>w[1]>0).map(([k,v])=>`<div>${WEAK_CATS[k]}: ${v} error${v>1?'s':''}</div>`).join('');
+}
+
+function renderWeakGrid(){
+  const el=document.getElementById('weak-grid');
+  const colors=['var(--red)','var(--amb)','var(--grn)'];
+  el.innerHTML=Object.entries(G.weaknesses).map(([k,v])=>{
+    const max=5,pct=Math.min(100,Math.round((v/max)*100));
+    const col=pct>60?colors[0]:pct>30?colors[1]:colors[2];
+    return `<div class="weak-card">
+      <div class="weak-title">${WEAK_CATS[k]}</div>
+      <div class="weak-bar-wrap">
+        <div class="weak-bar-bg"><div class="weak-bar-fill" style="width:${pct}%;background:${col}"></div></div>
+        <div class="weak-pct">${v}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderBrainBars(){
+  const colors=['#d4ff3f','#3fd4ff','#aa66ff','#ff5533','#1fff8a','#ffaa33','#ff3d5a','#d4ff3f'];
+  document.getElementById('brain-bars').innerHTML=BRAINS.map((nm,i)=>{
+    const att=G.brainAttempts[i]||0,sc=G.brainScores[i]||0;
+    const pct=att?Math.round((sc/att)*100):0;
+    return `<div class="brain-row"><div class="brain-nm">${nm}</div><div class="brain-bg"><div class="brain-fill" style="width:${pct}%;background:${colors[i]}"></div></div><div class="brain-pct">${att?pct+'%':'—'}</div></div>`;
+  }).join('');
+}
+
+document.querySelectorAll('.ntab').forEach(tab=>{
+  tab.addEventListener('click',()=>{
+    document.querySelectorAll('.ntab').forEach(t=>t.classList.remove('active'));
+    tab.classList.add('active');
+    document.querySelectorAll('.scr').forEach(s=>s.classList.remove('active'));
+    document.getElementById(tab.dataset.s+'-scr').classList.add('active');
+  });
+});
+
+function switchScr(id){
+  document.querySelectorAll('.ntab').forEach(t=>t.classList.remove('active'));
+  const tab=document.querySelector(`[data-s="${id}"]`);
+  if(tab) tab.classList.add('active');
+  document.querySelectorAll('.scr').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id+'-scr').classList.add('active');
+}
+
+// DIFFICULTY
+const DIFF_DESC={1:'Good distractors, some obvious signals',2:'All options viable, best answer wins',3:'Conflicting signals, traps, no clean answers',4:'Maximum ambiguity, adversarial framing'};
+document.querySelectorAll('.diff-pill').forEach(p=>{
+  p.addEventListener('click',()=>{
+    document.querySelectorAll('.diff-pill').forEach(x=>x.classList.remove('active'));
+    p.classList.add('active');
+    G.difficulty=parseInt(p.dataset.d);
+    document.getElementById('diff-desc').textContent=DIFF_DESC[G.difficulty];
+  });
+});
+
+// ═══════════════════════════════════════════════════════════════════
+// MODE LAUNCH
+// ═══════════════════════════════════════════════════════════════════
+function shuffle(arr){const a=[...arr];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a;}
+
+document.querySelectorAll('.mcard').forEach(card=>{
+  card.addEventListener('click',()=>{
+    const m=card.dataset.m;
+    if(m==='coach'){
+      switchScr('coach');
+      addCoachMsg('Entering First Meeting Simulator.\n\nChoose your scenario:\n\n• "HVAC office" — walk into a 14-truck HVAC owner\'s space\n• "Plumbing fleet yard" — cash-buyer, old trucks, third generation\n• "Restoration CEO" — aggressive scaler, cash tight, growing fast\n• "Fleet manager" — you\'re not talking to the owner\n• "Random" — I pick\n\nType which one you want and I\'ll set the scene.');
+      return;
+    }
+    if(!ALL_MODES[m]) return;
+    MODE=m;
+    Qs=shuffle([...ALL_MODES[m].cases]);
+    QIdx=0;SesCorrect=0;SesTot=0;G.streak=0;pendingConf=null;
+    G.consecutiveCorrect=0;
+    document.getElementById('trn-title').textContent=ALL_MODES[m].title;
+    document.getElementById('score-disp').textContent='0/'+Qs.length;
+    document.getElementById('prog-f').style.width='0%';
+    document.getElementById('streak-pill').style.display='none';
+    switchScr('training');
+    renderQ();
+  });
+});
+
+document.getElementById('back-btn').addEventListener('click',()=>switchScr('home'));
+
+// ═══════════════════════════════════════════════════════════════════
+// RENDER QUESTION
+// ═══════════════════════════════════════════════════════════════════
+function renderQ(){
+  const area=document.getElementById('case-area');
+  if(QIdx>=Qs.length){renderSummary();return;}
+  const q=Qs[QIdx];
+  document.getElementById('prog-f').style.width=Math.round((QIdx/Qs.length)*100)+'%';
+  document.getElementById('score-disp').textContent=SesCorrect+'/'+Qs.length;
+
+  const signalHTML=q.signals?`<div class="signal-grid">${q.signals.map(s=>`<div class="sig-item"><strong>${s.l}</strong>${s.v}</div>`).join('')}</div>`:'';
+  const conflictBadge=q.conflict?'<div class="conflict-badge">⚔ CONFLICTING SIGNALS</div>':'';
+  const letters=['A','B','C','D'];
+
+  area.innerHTML=`
+    <div class="case-card">
+      <div class="case-lbl">${q.label||'CASE'}</div>
+      ${conflictBadge}
+      <div class="case-scenario">${glossify(q.scenario)}</div>
+      ${signalHTML}
+    </div>
+    <div class="q-card">
+      <div class="q-text">${q.q}</div>
+      <div class="opts" id="opts">
+        ${q.opts.map((o,i)=>`<button class="opt-btn" data-i="${i}"><span class="opt-letter">${letters[i]}</span>${o.replace(/^[A-D]\)\s*/,'')}</button>`).join('')}
+      </div>
+      <div id="fb-area"></div>
+    </div>`;
+
+  document.querySelectorAll('.opt-btn').forEach(btn=>{
+    btn.addEventListener('click',function(){
+      const chosen=parseInt(this.dataset.i);
+      showConfidence(chosen,q);
+    });
+  });
+}
+
+function showConfidence(chosen,q){
+  document.querySelectorAll('.opt-btn').forEach(b=>b.disabled=true);
+  const fb=document.getElementById('fb-area');
+  fb.innerHTML=`
+    <div class="conf-area">
+      <div class="conf-label">How confident are you in that answer? (0 = guessing, 100 = certain)</div>
+      <div class="conf-row">
+        <input type="range" class="conf-slider" id="conf-sl" min="0" max="100" value="50" step="5"/>
+        <div class="conf-val" id="conf-v">50%</div>
+      </div>
+      <button class="conf-submit" id="conf-sub">Lock It In</button>
+    </div>`;
+  document.getElementById('conf-sl').addEventListener('input',function(){
+    document.getElementById('conf-v').textContent=this.value+'%';
+  });
+  document.getElementById('conf-sub').addEventListener('click',()=>{
+    const conf=parseInt(document.getElementById('conf-sl').value);
+    handleAnswer(chosen,conf,q);
+  });
+}
+
+function handleAnswer(chosen,conf,q){
+  const correct=chosen===q.correct;
+  const alsoViable=(q.alsoViable||[]).includes(chosen);
+  const letters=['A','B','C','D'];
+
+  document.querySelectorAll('.opt-btn').forEach((btn,i)=>{
+    btn.disabled=true;
+    if(i===q.correct) btn.classList.add('correct');
+    else if((q.alsoViable||[]).includes(i)) btn.classList.add('viable');
+    else if(i===chosen&&!correct) btn.classList.add('wrong');
+  });
+
+  SesTot++;G.total++;
+  const bi=ALL_MODES[MODE]?.brain||0;
+  G.brainAttempts[bi]=(G.brainAttempts[bi]||0)+1;
+  G.totalConf+=conf;G.confCount++;
+
+  let xpGain=0;
+  let confFeedback='';
+  let verdict='';
+  let fbClass='';
+
+  if(correct){
+    SesCorrect++;G.correct++;G.streak++;G.consecutiveCorrect++;
+    G.brainScores[bi]=(G.brainScores[bi]||0)+1;
+    if(G.streak>G.bestStreak) G.bestStreak=G.streak;
+    xpGain=G.streak>=3?175:120;
+    if(conf>=80){confFeedback=`<span class="conf-score" style="background:rgba(31,255,138,.15);color:var(--grn)">+CALIBRATED</span>`;xpGain+=50;}
+    else if(conf<40){confFeedback=`<span class="conf-score" style="background:rgba(255,170,51,.15);color:var(--amb)">UNDERCONFIDENT — trust your read</span>`;xpGain+=20;}
+    else{confFeedback=`<span class="conf-score" style="background:rgba(63,212,255,.15);color:var(--acc2)">SOLID</span>`;}
+    verdict=`✓ Correct.${alsoViable?' Other answers had merit too — see below.':''}`;
+    fbClass='good';
+    if(G.streak>=2){document.getElementById('streak-pill').style.display='flex';document.getElementById('streak-n').textContent=G.streak;}
+  } else {
+    G.streak=0;G.consecutiveCorrect=0;
+    document.getElementById('streak-pill').style.display='none';
+    if(q.weakness) G.weaknesses[q.weakness]=(G.weaknesses[q.weakness]||0)+1;
+    if(conf>=70){G.overconfident++;confFeedback=`<span class="conf-score" style="background:rgba(255,61,90,.15);color:var(--red)">OVERCONFIDENT — penalty applied</span>`;xpGain=-20;}
+    else{confFeedback=`<span class="conf-score" style="background:rgba(255,170,51,.15);color:var(--amb)">Good calibration — you knew it was uncertain</span>`;}
+    if(alsoViable){verdict='↗ Viable but not optimal.';fbClass='partial';xpGain=Math.max(0,xpGain+40);}
+    else{verdict='✗ Missed it.';fbClass='bad';}
+  }
+
+  G.xp=Math.max(0,G.xp+xpGain);
+  document.getElementById('score-disp').textContent=SesCorrect+'/'+Qs.length;
+
+  const viableNote=(q.alsoViable&&q.alsoViable.length>0)?`<div style="margin-top:8px;font-size:11px;color:var(--amb)">↗ Also viable: ${q.alsoViable.map(i=>letters[i]).join(', ')} — defensible but not the best first move.</div>`:'';
+
+  document.getElementById('fb-area').innerHTML=`
+    <div class="fb-box ${fbClass}">
+      <div class="fb-verdict">${verdict} ${confFeedback} <span style="font-size:10px;color:var(--txt3);margin-left:4px">${xpGain>=0?'+':''}${xpGain} XP</span></div>
+      <div style="font-size:12px;line-height:1.7">${glossify(q.feedback)}</div>
+      ${viableNote}
+      <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">
+        <button class="next-btn" id="next-btn">${QIdx+1<Qs.length?'Next Case →':'See Results →'}</button>
+        <button class="why-deeper" id="why-btn">Ask coach why →</button>
+      </div>
+    </div>`;
+
+  document.getElementById('next-btn').addEventListener('click',()=>{QIdx++;renderQ();updateUI();});
+  document.getElementById('why-btn').addEventListener('click',()=>{
+    switchScr('coach');
+    const chosen_text=q.opts[chosen].replace(/^[A-D]\)\s*/,'');
+    const correct_text=q.opts[q.correct].replace(/^[A-D]\)\s*/,'');
+    addUserMsg(`I just got this case wrong (or want to go deeper): "${q.label}". I chose "${chosen_text}" but the answer was "${correct_text}". Can you push me on my reasoning and teach me the underlying pattern?`);
+    sendToCoach(`I just answered a training case titled "${q.label}". I chose: "${chosen_text}". The correct answer was: "${correct_text}". The scenario was: ${q.scenario}. Don't just explain the answer — push me on my reasoning. Ask me why I chose what I chose, then use Socratic questioning to help me derive the correct thinking. Be adversarial but constructive.`);
+  });
+  updateUI();
+}
+
+function renderSummary(){
+  const pct=SesTot?Math.round((SesCorrect/SesTot)*100):0;
+  const grade=pct>=80?'Elite Read':pct>=65?'Solid Operator':pct>=50?'Developing':'Needs Work';
+  const gc=pct>=80?'var(--grn)':pct>=65?'var(--acc)':pct>=50?'var(--amb)':'var(--red)';
+  document.getElementById('prog-f').style.width='100%';
+  document.getElementById('case-area').innerHTML=`
+    <div style="padding:20px">
+      <div class="sum-card">
+        <div class="case-lbl">Session Complete</div>
+        <div class="sum-pct" style="color:${gc}">${pct}%</div>
+        <div class="sum-grade" style="color:${gc}">${grade}</div>
+        <div class="sum-sub">${SesCorrect} of ${SesTot} correct · ${G.overconfident} overconfident misses</div>
+        <div class="sum-btns">
+          <button class="next-btn" onclick="relaunch()">🔄 Run Again</button>
+          <button class="next-btn" style="background:var(--s2);color:var(--txt);border:1px solid var(--b2)" onclick="switchScr('home')">← Mission Control</button>
+          <button class="next-btn" style="background:var(--s2);color:var(--acc2);border:1px solid var(--b2)" onclick="goToCoachDebrief()">Coach Debrief →</button>
+        </div>
+      </div>
+    </div>`;
+}
+function relaunch(){Qs=shuffle([...ALL_MODES[MODE].cases]);QIdx=0;SesCorrect=0;SesTot=0;G.streak=0;document.getElementById('streak-pill').style.display='none';renderQ();}
+function goToCoachDebrief(){
+  switchScr('coach');
+  const weakTop=Object.entries(G.weaknesses).sort((a,b)=>b[1]-a[1]).filter(w=>w[1]>0).slice(0,2);
+  const weakStr=weakTop.length?weakTop.map(([k,v])=>`${WEAK_CATS[k]} (${v} errors)`).join(', '):'none tracked yet';
+  sendToCoach(`I just finished a training session: ${SesCorrect}/${SesTot} correct (${SesTot?Math.round((SesCorrect/SesTot)*100):0}%). My top weaknesses are: ${weakStr}. Give me a hard targeted scenario that attacks exactly these gaps. Don't be easy. Make me work.`);
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// AI COACH
+// ═══════════════════════════════════════════════════════════════════
+const SYS=`You are an elite commercial fleet and equipment advisor coach. You are adversarial, Socratic, and demanding. You do NOT validate lazy thinking.
+
+YOUR JOB:
+- Train the user to think like a business diagnostician, not a product pusher
+- Roleplay hard owner personas authentically when asked (stay in character until they break it)
+- Challenge every assumption with "What evidence do you have for that?"
+- Punish premature conclusions, lazy objection handling, and product-first thinking
+- Use real commercial finance concepts: TRAC, residual risk, LTV, TIB, seasonal cash flow, debt service, capital allocation, working capital, underwriting logic
+- Force prioritization: when multiple moves are valid, make them choose and defend
+
+FIRST MEETING SIMULATOR: When running a first meeting scenario, set the scene vividly, play the owner authentically, respond to what the user says in character. If they pitch too early, push back. If they make assumptions, call it out immediately. If they ask great diagnostic questions, reward them by revealing useful information. Make it feel like a real conversation.
+
+WEAKNESS ATTACKS: When told about weaknesses, design scenarios that specifically target those gaps.
+
+TONE: Direct. Challenging. Never mean. Like a great coach who respects you enough to push hard.
+
+Always end your response with either: a challenge question, a Socratic probe, or "your move" if in roleplay.`;
+
+function addCoachMsg(txt){
+  const el=document.getElementById('chat-msgs');
+  const d=document.createElement('div');d.className='msg coach';
+  d.innerHTML=`<div>${txt.replace(/\n/g,'<br/>')}</div><div class="msg-time">COACH · NOW</div>`;
+  el.appendChild(d);el.scrollTop=el.scrollHeight;
+}
+function addUserMsg(txt){
+  const el=document.getElementById('chat-msgs');
+  const d=document.createElement('div');d.className='msg user';
+  d.innerHTML=`<div>${txt}</div><div class="msg-time">YOU · NOW</div>`;
+  el.appendChild(d);el.scrollTop=el.scrollHeight;
+}
+function addThinking(){
+  const el=document.getElementById('chat-msgs');
+  const d=document.createElement('div');d.className='msg coach thinking';d.id='thinking';
+  d.innerHTML='<span></span><span></span><span></span>';
+  el.appendChild(d);el.scrollTop=el.scrollHeight;
+}
+
+async function sendToCoach(sysMsg){
+  if(!apiKey){addCoachMsg('Enter your API key in the bar above to activate me.');return;}
+  addThinking();
+  document.getElementById('chat-send').disabled=true;
+  const msgs=[...chatHistory];
+  if(sysMsg) msgs.push({role:'user',content:sysMsg});
+  try{
+    const r=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:900,system:SYS,messages:msgs})
+    });
+    const data=await r.json();
+    const reply=data.content?.map(c=>c.text||'').join('')||'Error — try again.';
+    document.getElementById('thinking')?.remove();
+    chatHistory.push({role:'assistant',content:reply});
+    addCoachMsg(reply);
+    G.xp+=30;updateUI();
+  }catch(e){
+    document.getElementById('thinking')?.remove();
+    addCoachMsg('Connection error. Check your API key.');
+  }
+  document.getElementById('chat-send').disabled=false;
+}
+
+async function sendChat(){
+  const inp=document.getElementById('chat-inp');
+  const txt=inp.value.trim();
+  if(!txt) return;
+  if(!apiKey){document.getElementById('api-st').textContent='Enter API key first';document.getElementById('api-st').style.color='var(--amb)';return;}
+  inp.value='';
+  addUserMsg(txt);
+  chatHistory.push({role:'user',content:txt});
+  await sendToCoach(null);
+}
+
+document.getElementById('api-save').addEventListener('click',()=>{
+  const k=document.getElementById('api-inp').value.trim();
+  if(k.startsWith('sk-')){
+    apiKey=k;
+    document.getElementById('api-st').textContent='✓ Active';
+    document.getElementById('api-st').style.color='var(--grn)';
+  } else {
+    document.getElementById('api-st').textContent='Invalid key';
+    document.getElementById('api-st').style.color='var(--red)';
+  }
+});
+document.getElementById('chat-send').addEventListener('click',sendChat);
+document.getElementById('chat-inp').addEventListener('keydown',e=>{if(e.key==='Enter')sendChat();});
+
+document.querySelectorAll('.chip').forEach(chip=>{
+  chip.addEventListener('click',()=>{
+    const prompt=chip.dataset.p;
+    addUserMsg(prompt);
+    chatHistory.push({role:'user',content:prompt});
+    sendToCoach(null);
+  });
+});
+
+// ═══════════════════════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════════════════════
+setTimeout(()=>{
+  document.getElementById('loader').classList.add('gone');
+  setTimeout(()=>document.getElementById('loader').remove(),400);
+},1400);
+updateUI();
+</script>
+</body>
+</html>
